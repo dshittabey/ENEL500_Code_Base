@@ -38,7 +38,7 @@ time.sleep(0.5)
 voltage_buffer = []
 time_buffer = []
 samples_per_sec = 450*60
-sample_rate = 1/samples_per_sec
+sample_rate = 1e-3
 # ADC121C021 address, 0x50(80)
 # Read data back from 0x00(00), 2 bytes
 # raw_adc MSB, raw_adc LSB
