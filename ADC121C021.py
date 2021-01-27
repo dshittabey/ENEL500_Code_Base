@@ -18,11 +18,11 @@ def send_to_file(buffer_list,filename):
     count = 0
     with open(filename, 'w') as f:
         for list_item in buffer_list:
-            if count != length-1:
-                f.write('%s,\n'%list_item)
-            else:
-                f.write('%s' % list_item)
-            count += 1
+            #if count != length-1:
+            f.write('%s\n'%list_item)
+            #else:
+            #    f.write('%s' % list_item)
+            #count += 1
     return
 
 
