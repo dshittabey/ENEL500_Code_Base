@@ -4,19 +4,15 @@
 // This code is designed to work with the ADC121C021_I2CADC I2C Mini Module available from ControlEverything.com.
 // https://www.controleverything.com/content/Analog-Digital-Converters?sku=ADC121C021_I2CADC#tabs-0-product_tabset-2
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <linux/i2c-dev.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-#include <time.h>
+#include "header.h"
 
-typedef struct timespec TIMESPEC;
+
 
 // This choice of clock seems to give the highest resolution on macOS.
 #define WHICH_CLOCK CLOCK_MONOTONIC_RAW
-#define THRESHOLD_BYTES_TO_READ 8192
-#define SAMPLES	32768
+#define SAMPLES	32768 //Samples per second
+#define THRESHOLD_BYTES_TO_READ SAMPLES/4
+#define MAXIMUM 1048576 // Maximum value going into fft program
 
 double timespec2ns(const TIMESPEC *ts)
 {
@@ -40,7 +36,7 @@ int main(){
 	double total_time = 0;
 	// Create I2C bus
 	int file;
-	char *bus = "/dev/i2c-1";
+	const char *bus = "/dev/i2c-1";
 	if((file = open(bus, O_RDWR)) < 0){
 		printf("Failed to open the bus. \n");
 		exit(1);
