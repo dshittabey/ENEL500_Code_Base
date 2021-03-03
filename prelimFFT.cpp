@@ -1,4 +1,30 @@
 #include "header.h"
+// This fft code was obtained from
+//http://www.iowahills.com/Example%20Code/WebFFTCode.txt
+
+
+// This verifies that the x = 2^M and returns M
+// Must be >= 8 for the Twiddle calculations
+int IsValidFFTSize(int x)
+{
+ if(x < MINIMUM_FFT_SIZE || x > MAXIMUM_FFT_SIZE || (x & (x - 1)) != 0)return(0);   // x & (x - 1) ensures a power of 2
+ return ( (int)( log((double)x) / M_LN2 + 0.5 ) );         // return M where N = 2^M
+}
+
+
+
+
+
+// This function takes in two arrays of double and returns the magnitude of the arrays in the first array
+void Magnitude(double *InputR, double *InputI, int N){
+    double temp;
+    for(int i = 0; i < N; i++){
+     
+        temp = sqrt((InputR[i]*InputR[i]) + (InputI[i]*InputI[i]));
+        InputR[i] = temp;
+    }
+}    
+
 
 // The Fourier Transform.
 void Transform(double *InputR, double *InputI, double *BufferR, double *BufferI, double *TwiddleR, double *TwiddleI, int N)
@@ -73,10 +99,10 @@ void FillTwiddleArray(double *TwiddleR, double *TwiddleI, int N, TTransFormType 
    TwiddleI[0] = 0.0;
    TwiddleR[N/4] = 0.0;
    TwiddleI[N/4] = -1.0;
-   TwiddleR[N/8] = M_SQRT_2;
-   TwiddleI[N/8] = -M_SQRT_2;
-   TwiddleR[3*N/8] = -M_SQRT_2;
-   TwiddleI[3*N/8] = -M_SQRT_2;
+   TwiddleR[N/8] = M_SQRT2;
+   TwiddleI[N/8] = -M_SQRT2;
+   TwiddleR[3*N/8] = -M_SQRT2;
+   TwiddleI[3*N/8] = -M_SQRT2;
    for(j=1; j<N/8; j++)
 	{
 	 Theta = (double)j * -TwoPiOverN;
@@ -97,10 +123,10 @@ void FillTwiddleArray(double *TwiddleR, double *TwiddleI, int N, TTransFormType 
    TwiddleI[0] = 0.0;
    TwiddleR[N/4] = 0.0;
    TwiddleI[N/4] = 1.0;
-   TwiddleR[N/8] = M_SQRT_2;
-   TwiddleI[N/8] = M_SQRT_2;
-   TwiddleR[3*N/8] = -M_SQRT_2;
-   TwiddleI[3*N/8] = M_SQRT_2;
+   TwiddleR[N/8] = M_SQRT2;
+   TwiddleI[N/8] = M_SQRT2;
+   TwiddleR[3*N/8] = -M_SQRT2;
+   TwiddleI[3*N/8] = M_SQRT2;
    for(j=1; j<N/8; j++)
 	{
 	 Theta = (double)j * TwoPiOverN;
@@ -174,21 +200,21 @@ void FFT(double *InputR, double *InputI, int N, TTransFormType Type)
  LogTwoOfN = IsValidFFTSize(N);
  if(LogTwoOfN == 0 || (Type != FORWARD && Type != INVERSE) )
  {
-  ShowMessage("Invalid FFT type or size.");
+  printf("Invalid FFT type or size.");
   return;
  }
 
  // Memory allocation for all the arrays.
- BufferR  = new(std::nothrow) double[N];
- BufferI  = new(std::nothrow) double[N];
- TwiddleR = new(std::nothrow) double[N/2];
- TwiddleI = new(std::nothrow) double[N/2];
- RevBits  = new(std::nothrow) int[N];
+ BufferR  = new double[N];
+ BufferI  = new double[N];
+ TwiddleR = new double[N/2];
+ TwiddleI = new double[N/2];
+ RevBits  = new int[N];
 
  if(BufferR == NULL  || BufferI == NULL  ||
 	TwiddleR == NULL || TwiddleI == NULL || RevBits == NULL)
   {
-   ShowMessage("FFT Memory Allocation Error");
+   printf("FFT Memory Allocation Error");
    return;
   }
 
